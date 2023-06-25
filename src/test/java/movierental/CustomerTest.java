@@ -1,32 +1,59 @@
 package movierental;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class CustomerTest {
+ class CustomerTest {
 
     @Test
-    public void test() {
-        Customer customer = new Customer("Bob");
-        customer.addRental(new Rental(new Movie("Jaws", Movie.REGULAR), 2));
-        customer.addRental(new Rental(new Movie("Golden Eye", Movie.REGULAR), 3));
-        customer.addRental(new Rental(new Movie("Short New", Movie.NEW_RELEASE), 1));
-        customer.addRental(new Rental(new Movie("Long New", Movie.NEW_RELEASE), 2));
-        customer.addRental(new Rental(new Movie("Bambi", Movie.CHILDRENS), 3));
-        customer.addRental(new Rental(new Movie("Toy Story", Movie.CHILDRENS), 4));
+     void shloudRenderForCLI() {
+        Customer customer = customer();
 
-        String expected = "" +
-                "Rental Record for Bob\n" +
-                "\tJaws\t2.0\n" +
-                "\tGolden Eye\t3.5\n" +
-                "\tShort New\t3.0\n" +
-                "\tLong New\t6.0\n" +
-                "\tBambi\t1.5\n" +
-                "\tToy Story\t3.0\n" +
-                "Amount owed is 19.0\n" +
-                "You earned 7 frequent renter points";
+        String expected =
+          """
+            Rental Record for Bob
+            \tJaws\t2.0
+            \tGolden Eye\t3.5
+            \tShort New\t3.0
+            \tLong New\t6.0
+            \tBambi\t1.5
+            \tToy Story\t3.0
+            Amount owed is 19.0
+            You earned 7 frequent renter points\
+            """;
 
-        assertEquals(expected, customer.statement());
+        Assertions.assertEquals(expected, customer.statement(new CLIRenderer()));
+    }
+
+    @Test
+    void shloudRenderForHTML() {
+      Customer customer = customer();
+
+      String expected =
+        """
+        <h1>Rental Record for <em>Bob</em></h1>\
+        <table>\
+        <tr><td>Jaws</td><td>2.0</td></tr>\
+        <tr><td>Golden Eye</td><td>3.5</td></tr>\
+        <tr><td>Short New</td><td>3.0</td></tr>\
+        <tr><td>Long New</td><td>6.0</td></tr>\
+        <tr><td>Bambi</td><td>1.5</td></tr>\
+        <tr><td>Toy Story</td><td>3.0</td></tr>\
+        </table>\
+        <p>Amount owed is <em>19.0</em></p>\
+        <p>You earned <em>7</em> frequent renter points</p>\
+        """;
+
+      Assertions.assertEquals(expected, customer.statement(new HTMLRenderer()));
+    }
+
+    private Customer customer() {
+      return new Customer("Bob")
+      .addRental(new Rental(new Movie("Jaws", MovieType.REGULAR), 2))
+      .addRental(new Rental(new Movie("Golden Eye", MovieType.REGULAR), 3))
+      .addRental(new Rental(new Movie("Short New", MovieType.NEW_RELEASE), 1))
+      .addRental(new Rental(new Movie("Long New", MovieType.NEW_RELEASE), 2))
+      .addRental(new Rental(new Movie("Bambi", MovieType.CHILDRENS), 3))
+      .addRental(new Rental(new Movie("Toy Story", MovieType.CHILDRENS), 4));
     }
 }
